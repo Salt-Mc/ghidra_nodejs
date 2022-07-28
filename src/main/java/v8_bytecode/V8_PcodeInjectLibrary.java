@@ -15,7 +15,6 @@ import ghidra.program.model.listing.Program;
 
 public class V8_PcodeInjectLibrary extends PcodeInjectLibrary {
 	private Set<String> implementedOps;
-	private SleighLanguage language;
 
 	public V8_PcodeInjectLibrary(SleighLanguage l) {
 		super(l);
@@ -35,30 +34,30 @@ public class V8_PcodeInjectLibrary extends PcodeInjectLibrary {
 		implementedOps.add("CallVariadicCallOther");
 		implementedOps.add("JSCallNCallOther");
 		implementedOps.add("ConstructCallOther");
-		implementedOps.add("CallJSRuntimeCallOther"); 
+		implementedOps.add("CallJSRuntimeCallOther");
 		implementedOps.add("ThrowCallOther");
 		implementedOps.add("StaDataPropertyInLiteralCallOther");
 	}
-	
+
 	@Override
 	public ConstantPool getConstantPool(Program program) throws IOException {
 		return new V8_ConstantPool(program);
 	}
-	
+
 	@Override
 	/**
 	* This method is called by DecompileCallback.getPcodeInject.
 	*/
-	public InjectPayload getPayload(int type, String name, Program program, String context) {
+	public InjectPayload getPayload(int type, String name) {
 		if (type == InjectPayload.CALLMECHANISM_TYPE) {
 			return null;
 		}
 
 		if (!implementedOps.contains(name)) {
-			return super.getPayload(type, name, program, context);
+			return super.getPayload(type, name);
 		}
 
-		V8_InjectPayload payload = null; 
+		V8_InjectPayload payload = null;
 		switch (name) {
 		case ("InvokeIntrinsicCallOther"):
 		case ("CallVariadicCallOther"):
@@ -68,20 +67,20 @@ public class V8_PcodeInjectLibrary extends PcodeInjectLibrary {
 		case ("ConstructCallOther"):
 			payload = new V8_InjectConstruct("", language, 0);
 			break;
-		case ("JSCallNCallOther"):	
+		case ("JSCallNCallOther"):
 			payload = new V8_InjectJSCallN("", language, 0);
 			break;
 		case ("CallJSRuntimeCallOther"):
 			payload = new V8_InjectCallJSRuntime("", language, 0);
 			break;
-		case ("ThrowCallOther"):	
+		case ("ThrowCallOther"):
 			payload = new V8_InjectThrow("", language, 0);
 			break;
 		case ("StaDataPropertyInLiteralCallOther"):
 			payload = new V8_InjectStaDataPropertyInLiteral("", language, 0);
 			break;
 		default:
-			return super.getPayload(type, name, program, context);
+			return super.getPayload(type, name);
 		}
 
 		return payload;

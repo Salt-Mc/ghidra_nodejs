@@ -9,6 +9,7 @@ import ghidra.program.model.lang.Register;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.pcode.PcodeOp;
+import ghidra.xml.XmlPullParser;
 
 
 public class V8_InjectJSCallN extends V8_InjectPayload {
@@ -24,14 +25,14 @@ public PcodeOp[] getPcode(Program program, InjectContext context) {
 	Integer callerParamsCount;
 	Integer argIndex = 0;
 	Integer callerArgIndex = 0;
-	
-	V8_PcodeOpEmitter pCode = new V8_PcodeOpEmitter(language, context.baseAddr, uniqueBase); 
+
+	V8_PcodeOpEmitter pCode = new V8_PcodeOpEmitter(language, context.baseAddr, uniqueBase);
 	Address opAddr = context.baseAddr;
 	Instruction instruction = program.getListing().getInstructionAt(opAddr);
 	// get arguments from slaspec, definition in cspec
 	Integer argcount = (int) context.inputlist.get(0).getOffset();
 	Integer receiver = (int) context.inputlist.get(1).getOffset();
-	
+
 
 	ArrayList<Object> opArrList = new ArrayList<Object>();
 	for (int i = 0; i < argcount; i++) {
@@ -49,7 +50,7 @@ public PcodeOp[] getPcode(Program program, InjectContext context) {
 	// it does not match the logic of the node.exe but important for output quality
 	if (callerParamsCount >  opObjects.length) {
 		callerParamsCount = opObjects.length;
-	}	
+	}
 	for (; callerArgIndex < callerParamsCount; callerArgIndex++) {
 		pCode.emitPushCat1Value("a" + callerArgIndex);
 	}
@@ -88,5 +89,30 @@ public PcodeOp[] getPcode(Program program, InjectContext context) {
 public String getName() {
 	// TODO Auto-generated method stub
 	return "InjectJSCallN";
+}
+
+@Override
+public boolean isErrorPlaceholder() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+
+@Override
+public boolean isIncidentalCopy() {
+	// TODO Auto-generated method stub
+	return false;
+}
+
+
+@Override
+public void saveXml(StringBuilder buffer) {
+	// TODO Auto-generated method stub
+
+}
+
+@Override
+public void restoreXml(XmlPullParser parser, SleighLanguage unused) {
+
 }
 }

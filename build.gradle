@@ -1,9 +1,9 @@
 // Builds a Ghidra Extension for a given Ghidra installation.
 //
-// An absolute path to the Ghidra installation directory must be supplied either by setting the 
+// An absolute path to the Ghidra installation directory must be supplied either by setting the
 // GHIDRA_INSTALL_DIR environment variable or Gradle project property:
 //
-//     > export GHIDRA_INSTALL_DIR=<Absolute path to Ghidra> 
+//     > export GHIDRA_INSTALL_DIR=<Absolute path to Ghidra>
 //     > gradle
 //
 //         or
@@ -31,3 +31,22 @@ else {
 	throw new GradleException("GHIDRA_INSTALL_DIR is not defined!")
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+import org.gradle.plugins.ide.eclipse.model.Library
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+def pathToGhidra = new File(ghidraInstallDir).getCanonicalPath()
+
+eclipse {
+	classpath {
+		file {
+			whenMerged {
+				def lib = entries.find { it.path.contains 'SoftwareModeling.jar' }
+				lib.javadocPath = fileReference(file("{pathToGhidra}/docs/GhidraAPI_javadoc.zip"))
+				lib.sourcePath = fileReference(file("{pathToGhidra}/Ghidra/Framework/SoftwareModeling/lib/SoftwareModeling-src.zip"))
+			}
+		}
+	}
+}

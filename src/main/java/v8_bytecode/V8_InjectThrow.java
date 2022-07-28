@@ -6,6 +6,8 @@ import ghidra.program.model.lang.InjectContext;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.pcode.PcodeOp;
+import ghidra.xml.XmlParseException;
+import ghidra.xml.XmlPullParser;
 
 public class V8_InjectThrow  extends V8_InjectPayload {
 	public V8_InjectThrow(String sourceName, SleighLanguage language, long uniqBase) {
@@ -13,16 +15,16 @@ public class V8_InjectThrow  extends V8_InjectPayload {
 		// TODO Auto-generated constructor stub
 	}
 
-	
+
 	@Override
 	public PcodeOp[] getPcode(Program program, InjectContext context) {
 		Integer callerParamsCount;
 		Integer argIndex = 0;
 		Integer callerArgIndex = 0;
 		Integer fIdx = 0;
-		V8_PcodeOpEmitter pCode = new V8_PcodeOpEmitter(language, context.baseAddr, uniqueBase); 
+		V8_PcodeOpEmitter pCode = new V8_PcodeOpEmitter(language, context.baseAddr, uniqueBase);
 		Address opAddr = context.baseAddr;
-		
+
 		Instruction instruction = program.getListing().getInstructionAt(opAddr);
 		// get arguments from slaspec, definition in cspec
 		Integer condition = (int) context.inputlist.get(0).getOffset();
@@ -74,5 +76,33 @@ public class V8_InjectThrow  extends V8_InjectPayload {
 	public String getName() {
 		// TODO Auto-generated method stub
 		return "InjectThrow";
+	}
+
+
+	@Override
+	public boolean isErrorPlaceholder() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean isIncidentalCopy() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public void saveXml(StringBuilder buffer) {
+		// TODO Auto-generated method stub
+
+	}
+
+
+	@Override
+	public void restoreXml(XmlPullParser parser, SleighLanguage language) throws XmlParseException {
+		// TODO Auto-generated method stub
+
 	}
 }
